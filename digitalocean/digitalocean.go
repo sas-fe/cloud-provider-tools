@@ -1,3 +1,4 @@
+// Package digitalocean implements methods to create servers on digitalocean
 package digitalocean
 
 import (
@@ -40,8 +41,6 @@ func NewProvider(DOToken string, domain string) *Provider {
 }
 
 // CreateServer creates a droplet on digitalocean
-// TODO refactor to use ServerInfo and ServerOptions
-// TODO move image ID to env variable
 func (p *Provider) CreateServer(name string, opts ...common.ServerOption) (*common.CreateResponse, error) {
 	var dropletID int
 	var dropletIP string

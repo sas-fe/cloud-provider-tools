@@ -1,3 +1,4 @@
+// Package cpt provides common interfaces for creating on-demand servers with various providers
 package cpt
 
 import (
