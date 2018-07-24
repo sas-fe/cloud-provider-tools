@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/sas-fe/cloud-provider-tools/common"
 	"github.com/sas-fe/cloud-provider-tools/digitalocean"
 )
 
@@ -21,7 +22,16 @@ func main() {
 
 	p := digitalocean.NewProvider(doToken, domain)
 
-	resp, err := p.CreateServer("test-ondemand")
+	startupScript := `#!/bin/bash	
+	docker run -p 9999:9999 -d --rm sasfe/sas4c:python-only`
+
+	resp, err := p.CreateServer(
+		"test-ondemand",
+		common.ServerRegion("nyc1"),
+		common.ServerSize("s-1vcpu-1gb"),
+		common.ServerScript(startupScript),
+		common.ServerTags([]string{"OnDemand"}),
+	)
 	if err != nil {
 		panic(err)
 	}

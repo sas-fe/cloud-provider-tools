@@ -48,11 +48,25 @@ func (p *Provider) CreateServer(name string, opts ...common.ServerOption) (*comm
 
 	ctx := context.TODO()
 
-	imageIDEnv := os.Getenv("DO_IMAGE_ID")
-	imageID, err := strconv.Atoi(imageIDEnv)
+	s := &common.ServerInfo{
+		Name: name,
+	}
+
+	for _, opt := range opts {
+		opt.Set(s)
+	}
+
+	var imageIDStr string
+	if len(s.Image) == 0 {
+		imageIDStr = os.Getenv("DO_IMAGE_ID")
+	} else {
+		imageIDStr = s.Image
+	}
+
+	imageID, err := strconv.Atoi(imageIDStr)
 
 	var image godo.DropletCreateImage
-	if len(imageIDEnv) == 0 || err != nil {
+	if len(imageIDStr) == 0 || err != nil {
 		image = godo.DropletCreateImage{
 			Slug: "docker-16-04",
 		}
@@ -62,17 +76,14 @@ func (p *Provider) CreateServer(name string, opts ...common.ServerOption) (*comm
 		}
 	}
 
-	startupScript := `#!/bin/bash	
-	docker run -p 9999:9999 -d --rm sasfe/sas4c:jupyter`
-
 	dropletRequest := &godo.DropletCreateRequest{
-		Name:     name,
-		Region:   "nyc1",
-		Size:     "s-1vcpu-1gb",
+		Name:     s.Name,
+		Region:   s.Region,
+		Size:     s.Size,
 		Image:    image,
-		UserData: startupScript,
+		UserData: s.Script,
 		IPv6:     false,
-		Tags:     []string{"OnDemand"},
+		Tags:     s.Tags,
 	}
 
 	fmt.Println("Creating Droplet...")

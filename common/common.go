@@ -8,17 +8,19 @@ type CreateResponse struct {
 	SubDomainID interface{}
 }
 
-// serverInfo contains configuration information for the server
+// ServerInfo contains configuration information for the server
 type ServerInfo struct {
-	name   string
-	size   string
-	region string
-	image  string
+	Name   string
+	Size   string
+	Region string
+	Image  string
+	Script string
+	Tags   []string
 }
 
 // ServerOption configures a server for creation
 type ServerOption interface {
-	set(*ServerInfo) error
+	Set(*ServerInfo) error
 }
 
 // SizeServerOption configures the server size
@@ -26,8 +28,9 @@ type SizeServerOption struct {
 	Size string
 }
 
-func (o SizeServerOption) set(s *ServerInfo) error {
-	s.size = o.Size
+// Set sets the server size
+func (o SizeServerOption) Set(s *ServerInfo) error {
+	s.Size = o.Size
 	return nil
 }
 
@@ -41,8 +44,9 @@ type RegionServerOption struct {
 	Region string
 }
 
-func (o RegionServerOption) set(s *ServerInfo) error {
-	s.region = o.Region
+// Set sets the server region
+func (o RegionServerOption) Set(s *ServerInfo) error {
+	s.Region = o.Region
 	return nil
 }
 
@@ -56,12 +60,45 @@ type ImageServerOption struct {
 	Image string
 }
 
-func (o ImageServerOption) set(s *ServerInfo) error {
-	s.image = o.Image
+// Set sets the server image
+func (o ImageServerOption) Set(s *ServerInfo) error {
+	s.Image = o.Image
 	return nil
 }
 
 // ServerImage returns a ServerOption that sets the image
 func ServerImage(image string) ServerOption {
 	return ImageServerOption{image}
+}
+
+// ScriptServerOption configures the server startup script
+type ScriptServerOption struct {
+	Script string
+}
+
+// Set sets the server startup script
+func (o ScriptServerOption) Set(s *ServerInfo) error {
+	s.Script = o.Script
+	return nil
+}
+
+// ServerScript returns a ServerOption that sets the startup script
+func ServerScript(script string) ServerOption {
+	return ScriptServerOption{script}
+}
+
+// TagsServerOption configures the server tags
+type TagsServerOption struct {
+	Tags []string
+}
+
+// Set sets the server tags
+func (o TagsServerOption) Set(s *ServerInfo) error {
+	s.Tags = o.Tags
+	return nil
+}
+
+// ServerTags returns a ServerOption that sets the tags
+func ServerTags(tags []string) ServerOption {
+	return TagsServerOption{tags}
 }
