@@ -20,7 +20,14 @@ func main() {
         panic(err)
     }
 
-    resp, err := p.CreateServer("test-server",)
+    serverResp, err := p.CreateServer("test-server")
+    if err != nil {
+        panic(err)
+    }
+
+    subDomain := serverResp.Name + "-" + strconv.Itoa(serverResp.ServerID.(int)) + "." + "instances"
+
+    dnsResp, err := p.CreateDNSRecord(subDomain, serverResp.ServerIP)
     if err != nil {
         panic(err)
     }
@@ -28,9 +35,14 @@ func main() {
     fmt.Println("Sleeping for 120 seconds")
     time.Sleep(120 * time.Second)
 
-    err2 := p.RemoveServer(resp.ServerID, resp.SubDomainID)
+    err2 := p.RemoveServer(serverResp.ServerID)
     if err2 != nil {
         panic(err2)
+    }
+
+    err3 := p.RemoveDNSRecord(dnsResp.SubDomainID)
+    if err3 != nil {
+        panic(err3)
     }
 }
 ```

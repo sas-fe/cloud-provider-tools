@@ -25,8 +25,10 @@ const (
 
 // CloudProvider implements methods for creating/removing serves
 type CloudProvider interface {
-	CreateServer(name string, opts ...common.ServerOption) (*common.CreateResponse, error)
-	RemoveServer(serverID interface{}, subDomainID interface{}) error
+	CreateServer(name string, opts ...common.ServerOption) (*common.CreateServerResponse, error)
+	RemoveServer(serverID interface{}) error
+	CreateDNSRecord(name string, IP string) (*common.CreateDNSRecordResponse, error)
+	RemoveDNSRecord(subDomainID interface{}) error
 }
 
 var _ CloudProvider = (*digitalocean.Provider)(nil)

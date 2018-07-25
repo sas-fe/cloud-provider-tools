@@ -1,9 +1,14 @@
 package common
 
-// CreateResponse contains the response from server creation
-type CreateResponse struct {
-	Name        string
-	ServerID    interface{}
+// CreateServerResponse contains the response from server creation
+type CreateServerResponse struct {
+	Name     string
+	ServerID interface{}
+	ServerIP string
+}
+
+// CreateDNSRecordResponse contains the response from DNS record creation
+type CreateDNSRecordResponse struct {
 	SubDomain   string
 	SubDomainID interface{}
 }

@@ -1,4 +1,4 @@
-// Package digitalocean implements methods to create servers on digitalocean
+// Package digitalocean implements methods to create servers on DigitalOcean
 package digitalocean
 
 import (
@@ -40,8 +40,8 @@ func NewProvider(DOToken string, domain string) *Provider {
 	return &Provider{clientFromToken(DOToken), domain}
 }
 
-// CreateServer creates a droplet on digitalocean
-func (p *Provider) CreateServer(name string, opts ...common.ServerOption) (*common.CreateResponse, error) {
+// CreateServer creates a droplet on DigitalOcean
+func (p *Provider) CreateServer(name string, opts ...common.ServerOption) (*common.CreateServerResponse, error) {
 	var dropletID int
 	var dropletIP string
 
@@ -114,32 +114,54 @@ func (p *Provider) CreateServer(name string, opts ...common.ServerOption) (*comm
 
 	fmt.Println(dropletIP)
 
-	subDomain := name + "-" + strconv.Itoa(dropletID) + "." + "instances"
+	return &common.CreateServerResponse{
+		Name:     name,
+		ServerID: dropletID,
+		ServerIP: dropletIP,
+	}, nil
+}
+
+// CreateDNSRecord creates a DNS A Record on DigitalOcean
+func (p *Provider) CreateDNSRecord(subDomain string, IP string) (*common.CreateDNSRecordResponse, error) {
+	ctx := context.TODO()
+
 	domainRequest := &godo.DomainRecordEditRequest{
 		Type: "A",
 		Name: subDomain,
-		Data: dropletIP,
+		Data: IP,
 	}
 	domainRecord, _, err := p.client.Domains.CreateRecord(ctx, p.domain, domainRequest)
 	if err != nil {
 		return nil, err
 	}
 
-	return &common.CreateResponse{
-		Name:        name,
-		ServerID:    dropletID,
+	return &common.CreateDNSRecordResponse{
 		SubDomain:   subDomain,
 		SubDomainID: domainRecord.ID,
 	}, nil
 }
 
-// RemoveServer removes a droplet on digitalocean
-func (p *Provider) RemoveServer(serverID interface{}, subDomainID interface{}) error {
+// RemoveServer removes a droplet on DigitalOcean
+func (p *Provider) RemoveServer(serverID interface{}) error {
 	intServerID, ok := serverID.(int)
 	if !ok {
 		return fmt.Errorf("%v is not an int", serverID)
 	}
 
+	ctx := context.TODO()
+
+	fmt.Println("Deleting droplet...")
+	_, err := p.client.Droplets.Delete(ctx, intServerID)
+	if err != nil {
+		return err
+	}
+	fmt.Println("Done")
+
+	return nil
+}
+
+// RemoveDNSRecord removes a DNS A Record from DigitalOcean
+func (p *Provider) RemoveDNSRecord(subDomainID interface{}) error {
 	intSubDomainID, ok := subDomainID.(int)
 	if !ok {
 		return fmt.Errorf("%v is not an int", subDomainID)
@@ -149,13 +171,6 @@ func (p *Provider) RemoveServer(serverID interface{}, subDomainID interface{}) e
 
 	fmt.Println("Deleting Domain Record...")
 	_, err := p.client.Domains.DeleteRecord(ctx, p.domain, intSubDomainID)
-	if err != nil {
-		return err
-	}
-	fmt.Println("Done")
-
-	fmt.Println("Deleting droplet...")
-	_, err = p.client.Droplets.Delete(ctx, intServerID)
 	if err != nil {
 		return err
 	}
