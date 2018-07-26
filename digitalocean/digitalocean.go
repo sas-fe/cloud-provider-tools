@@ -41,11 +41,9 @@ func NewProvider(DOToken string, domain string) *Provider {
 }
 
 // CreateServer creates a droplet on DigitalOcean
-func (p *Provider) CreateServer(name string, opts ...common.ServerOption) (*common.CreateServerResponse, error) {
+func (p *Provider) CreateServer(ctx context.Context, name string, opts ...common.ServerOption) (*common.CreateServerResponse, error) {
 	var dropletID int
 	var dropletIP string
-
-	ctx := context.TODO()
 
 	s := &common.ServerInfo{
 		Name: name,
@@ -122,9 +120,7 @@ func (p *Provider) CreateServer(name string, opts ...common.ServerOption) (*comm
 }
 
 // CreateDNSRecord creates a DNS A Record on DigitalOcean
-func (p *Provider) CreateDNSRecord(subDomain string, IP string) (*common.CreateDNSRecordResponse, error) {
-	ctx := context.TODO()
-
+func (p *Provider) CreateDNSRecord(ctx context.Context, subDomain string, IP string) (*common.CreateDNSRecordResponse, error) {
 	domainRequest := &godo.DomainRecordEditRequest{
 		Type: "A",
 		Name: subDomain,
@@ -142,13 +138,11 @@ func (p *Provider) CreateDNSRecord(subDomain string, IP string) (*common.CreateD
 }
 
 // RemoveServer removes a droplet on DigitalOcean
-func (p *Provider) RemoveServer(serverID interface{}) error {
+func (p *Provider) RemoveServer(ctx context.Context, serverID interface{}) error {
 	intServerID, ok := serverID.(int)
 	if !ok {
 		return fmt.Errorf("%v is not an int", serverID)
 	}
-
-	ctx := context.TODO()
 
 	fmt.Println("Deleting droplet...")
 	_, err := p.client.Droplets.Delete(ctx, intServerID)
@@ -161,13 +155,11 @@ func (p *Provider) RemoveServer(serverID interface{}) error {
 }
 
 // RemoveDNSRecord removes a DNS A Record from DigitalOcean
-func (p *Provider) RemoveDNSRecord(subDomainID interface{}) error {
+func (p *Provider) RemoveDNSRecord(ctx context.Context, subDomainID interface{}) error {
 	intSubDomainID, ok := subDomainID.(int)
 	if !ok {
 		return fmt.Errorf("%v is not an int", subDomainID)
 	}
-
-	ctx := context.TODO()
 
 	fmt.Println("Deleting Domain Record...")
 	_, err := p.client.Domains.DeleteRecord(ctx, p.domain, intSubDomainID)

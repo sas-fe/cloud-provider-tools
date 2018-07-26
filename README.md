@@ -7,6 +7,7 @@
 package main
 
 import (
+    "context"
     "fmt"
     "time"
 
@@ -20,14 +21,16 @@ func main() {
         panic(err)
     }
 
-    serverResp, err := p.CreateServer("test-server")
+    ctx := context.TODO()
+
+    serverResp, err := p.CreateServer(ctx, "test-server")
     if err != nil {
         panic(err)
     }
 
     subDomain := serverResp.Name + "-" + strconv.Itoa(serverResp.ServerID.(int)) + "." + "instances"
 
-    dnsResp, err := p.CreateDNSRecord(subDomain, serverResp.ServerIP)
+    dnsResp, err := p.CreateDNSRecord(ctx, subDomain, serverResp.ServerIP)
     if err != nil {
         panic(err)
     }
@@ -35,12 +38,12 @@ func main() {
     fmt.Println("Sleeping for 120 seconds")
     time.Sleep(120 * time.Second)
 
-    err2 := p.RemoveServer(serverResp.ServerID)
+    err2 := p.RemoveServer(ctx, serverResp.ServerID)
     if err2 != nil {
         panic(err2)
     }
 
-    err3 := p.RemoveDNSRecord(dnsResp.SubDomainID)
+    err3 := p.RemoveDNSRecord(ctx, dnsResp.SubDomainID)
     if err3 != nil {
         panic(err3)
     }

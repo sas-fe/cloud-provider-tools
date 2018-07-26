@@ -2,6 +2,7 @@
 package cpt
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -25,10 +26,10 @@ const (
 
 // CloudProvider implements methods for creating/removing serves
 type CloudProvider interface {
-	CreateServer(name string, opts ...common.ServerOption) (*common.CreateServerResponse, error)
-	RemoveServer(serverID interface{}) error
-	CreateDNSRecord(name string, IP string) (*common.CreateDNSRecordResponse, error)
-	RemoveDNSRecord(subDomainID interface{}) error
+	CreateServer(ctx context.Context, name string, opts ...common.ServerOption) (*common.CreateServerResponse, error)
+	RemoveServer(ctx context.Context, serverID interface{}) error
+	CreateDNSRecord(ctx context.Context, name string, IP string) (*common.CreateDNSRecordResponse, error)
+	RemoveDNSRecord(ctx context.Context, subDomainID interface{}) error
 }
 
 var _ CloudProvider = (*digitalocean.Provider)(nil)
