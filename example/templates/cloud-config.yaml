@@ -1,0 +1,21 @@
+#cloud-config
+
+users:
+  - name: {{ .UserName }} 
+    homedir: {{ .UserHome }}
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    shell: /bin/bash
+write_files:
+  - path: {{ .UserHome }}/docker-compose.yaml
+    content: |
+{{ .DockerCompose | indent 6 }}
+  - path: {{ .UserHome }}/nginx.conf
+    content: |
+{{ .NginxConf | indent 6 }}
+  - path: {{ .UserHome }}/digitalocean.ini
+    content: |
+{{ .DODns | indent 6 }}
+runcmd:
+  {{ range $i, $cmd := .Commands -}}
+  - {{ $cmd }}
+  {{ end }}

@@ -41,6 +41,7 @@ func NewProvider(DOToken string, domain string) *Provider {
 }
 
 // CreateServer creates a droplet on DigitalOcean
+// TODO reimplement waiting for IP using a ticker
 func (p *Provider) CreateServer(ctx context.Context, name string, opts ...common.ServerOption) (*common.CreateServerResponse, error) {
 	var dropletID int
 	var dropletIP string
@@ -78,7 +79,7 @@ func (p *Provider) CreateServer(ctx context.Context, name string, opts ...common
 		Region:   s.Region,
 		Size:     s.Size,
 		Image:    image,
-		UserData: s.Script,
+		UserData: s.UserData,
 		IPv6:     false,
 		Tags:     s.Tags,
 	}

@@ -34,7 +34,7 @@ func main() {
 		"test-ondemand",
 		common.ServerRegion("nyc1"),
 		common.ServerSize("s-1vcpu-1gb"),
-		common.ServerScript(startupScript),
+		common.ServerUserData(startupScript),
 		common.ServerTags([]string{"OnDemand"}),
 	)
 	if err != nil {

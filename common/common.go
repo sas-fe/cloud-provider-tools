@@ -15,12 +15,12 @@ type CreateDNSRecordResponse struct {
 
 // ServerInfo contains configuration information for the server
 type ServerInfo struct {
-	Name   string
-	Size   string
-	Region string
-	Image  string
-	Script string
-	Tags   []string
+	Name     string
+	Size     string
+	Region   string
+	Image    string
+	UserData string
+	Tags     []string
 }
 
 // ServerOption configures a server for creation
@@ -76,20 +76,20 @@ func ServerImage(image string) ServerOption {
 	return ImageServerOption{image}
 }
 
-// ScriptServerOption configures the server startup script
-type ScriptServerOption struct {
-	Script string
+// UserDataServerOption configures the server UserData with cloud-init
+type UserDataServerOption struct {
+	UserData string
 }
 
-// Set sets the server startup script
-func (o ScriptServerOption) Set(s *ServerInfo) error {
-	s.Script = o.Script
+// Set sets the server UserData
+func (o UserDataServerOption) Set(s *ServerInfo) error {
+	s.UserData = o.UserData
 	return nil
 }
 
-// ServerScript returns a ServerOption that sets the startup script
-func ServerScript(script string) ServerOption {
-	return ScriptServerOption{script}
+// ServerUserData returns a ServerOption that sets the UserData
+func ServerUserData(userdata string) ServerOption {
+	return UserDataServerOption{userdata}
 }
 
 // TagsServerOption configures the server tags
