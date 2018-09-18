@@ -8,15 +8,13 @@ services:
       - "443:443"
     volumes:
       - {{ .VolRoot }}/nginx.conf:/config/nginx/site-confs/default
-      - {{ .VolRoot }}/digitalocean.ini:/config/dns-conf/digitalocean.ini
     environment:
       - URL={{ .Domain }}
       - SUBDOMAINS={{ .SubDomain }}
-      - VALIDATION=dns
+      - VALIDATION=http
       - PGID=1
       - PUID=1
       - TZ=America/New_York
-      - DNSPLUGIN=digitalocean
       - ONLY_SUBDOMAINS=true
   {{ .Name }}:
     image: "{{ .Image }}"

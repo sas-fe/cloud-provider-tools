@@ -2,15 +2,17 @@ package common
 
 // CreateServerResponse contains the response from server creation
 type CreateServerResponse struct {
-	Name     string
-	ServerID interface{}
-	ServerIP string
+	Name         string
+	ServerID     interface{}
+	ServerRegion string
+	ServerIP     string
 }
 
 // CreateDNSRecordResponse contains the response from DNS record creation
 type CreateDNSRecordResponse struct {
 	SubDomain   string
 	SubDomainID interface{}
+	SubDomainIP string
 }
 
 // ServerInfo contains configuration information for the server

@@ -51,14 +51,12 @@ type Config struct {
 	Commands      []string
 	DockerCompose string
 	NginxConf     string
-	DODns         string
 }
 
 // Ingress contains config values for ingress service
 type Ingress struct {
 	ServicePort int
 	Upgrade     bool
-	DOToken     string
 	Service     Service
 }
 
@@ -73,16 +71,10 @@ func main() {
 		panic("$DOMAIN not set")
 	}
 
-	doToken := os.Getenv("DO_TOKEN")
-	if len(doToken) == 0 {
-		panic("$DO_TOKEN not set")
+	gcpImageURL := os.Getenv("GCP_SOURCE_IMAGE")
+	if len(gcpImageURL) == 0 {
+		panic("$GCP_SOURCE_IMAGE not set")
 	}
-
-	doImageID := os.Getenv("DO_IMAGE_ID")
-	if len(doImageID) == 0 {
-		panic("$DO_IMAGE_ID not set")
-	}
-	fmt.Printf("DO_IMAGE_ID: %s\n", doImageID)
 
 	dockerUser := os.Getenv("DOCKER_USER")
 	if len(dockerUser) == 0 {
@@ -122,7 +114,6 @@ func main() {
 	nConf := Ingress{
 		ServicePort: 8080,
 		Upgrade:     true,
-		DOToken:     doToken,
 		Service:     service,
 	}
 
@@ -131,11 +122,8 @@ func main() {
 		panic(err)
 	}
 
-	doBuf := new(bytes.Buffer)
-	if err := t.ExecuteTemplate(doBuf, "digitalocean.ini", nConf); err != nil {
-		panic(err)
-	}
-
+	installDocker := fmt.Sprintf("curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh")
+	installCompose := fmt.Sprintf("curl -L 'https://github.com/docker/compose/releases/download/1.11.2/docker-compose-Linux-x86_64' -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose")
 	dockerLogin := fmt.Sprintf("docker login --username=%s --password=%s", dockerUser, dockerPW)
 	dockerPull := fmt.Sprintf("docker-compose -f /home/%s/docker-compose.yaml pull", username)
 	dockerUp := fmt.Sprintf("runuser -l %s -c 'sudo docker-compose -f /home/%s/docker-compose.yaml up -d'", username, username)
@@ -144,11 +132,10 @@ func main() {
 		UserHome:      userhome,
 		DockerCompose: string(composeBuf.Bytes()),
 		NginxConf:     string(nginxBuf.Bytes()),
-		DODns:         string(doBuf.Bytes()),
 	}
 	config.Commands = []string{}
-	config.Commands = append(config.Commands, "ufw allow http")
-	config.Commands = append(config.Commands, "ufw allow https")
+	config.Commands = append(config.Commands, installDocker)
+	config.Commands = append(config.Commands, installCompose)
 	config.Commands = append(config.Commands, dockerLogin)
 	config.Commands = append(config.Commands, dockerPull)
 	config.Commands = append(config.Commands, dockerUp)
@@ -159,7 +146,7 @@ func main() {
 	}
 	fmt.Println(configBuf.String())
 
-	p, err := cpt.NewCloudProvider(cpt.DIGITALOCEAN)
+	p, err := cpt.NewCloudProvider(cpt.GCE)
 	if err != nil {
 		panic(err)
 	}
@@ -169,11 +156,11 @@ func main() {
 	serverResp, err := p.CreateServer(
 		ctx,
 		serverName,
-		common.ServerImage(doImageID),
-		common.ServerRegion("nyc1"),
-		common.ServerSize("s-1vcpu-1gb"),
+		common.ServerImage(gcpImageURL),
+		common.ServerRegion("us-east1-c"),
+		common.ServerSize("n1-highcpu-4"),
 		common.ServerUserData(configBuf.String()),
-		common.ServerTags([]string{"OnDemand"}),
+		common.ServerTags([]string{"http-server", "https-server", "face-recognition"}),
 	)
 	if err != nil {
 		panic(err)

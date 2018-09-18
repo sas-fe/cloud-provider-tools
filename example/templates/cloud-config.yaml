@@ -12,9 +12,6 @@ write_files:
   - path: {{ .UserHome }}/nginx.conf
     content: |
 {{ .NginxConf | indent 6 }}
-  - path: {{ .UserHome }}/digitalocean.ini
-    content: |
-{{ .DODns | indent 6 }}
 runcmd:
   {{ range $i, $cmd := .Commands -}}
   - {{ $cmd }}

@@ -55,13 +55,13 @@ func main() {
 	fmt.Println("Sleeping for 120 seconds")
 	time.Sleep(120 * time.Second)
 
-	err2 := p.RemoveServer(ctx, serverResp.ServerID)
+	err2 := p.RemoveServer(ctx, serverResp)
 	// err2 := p.RemoveServer(ctx, 101309830)
 	if err2 != nil {
 		panic(err2)
 	}
 
-	err3 := p.RemoveDNSRecord(ctx, dnsResp.SubDomainID)
+	err3 := p.RemoveDNSRecord(ctx, dnsResp)
 	// err2 := p.RemoveDNSRecord(ctx, 49549772)
 	if err3 != nil {
 		panic(err3)

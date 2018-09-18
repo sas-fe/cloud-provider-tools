@@ -114,9 +114,10 @@ func (p *Provider) CreateServer(ctx context.Context, name string, opts ...common
 	fmt.Println(dropletIP)
 
 	return &common.CreateServerResponse{
-		Name:     name,
-		ServerID: dropletID,
-		ServerIP: dropletIP,
+		Name:         name,
+		ServerID:     dropletID,
+		ServerRegion: s.Region,
+		ServerIP:     dropletIP,
 	}, nil
 }
 
@@ -139,10 +140,10 @@ func (p *Provider) CreateDNSRecord(ctx context.Context, subDomain string, IP str
 }
 
 // RemoveServer removes a droplet on DigitalOcean
-func (p *Provider) RemoveServer(ctx context.Context, serverID interface{}) error {
-	intServerID, ok := serverID.(int)
+func (p *Provider) RemoveServer(ctx context.Context, server *common.CreateServerResponse) error {
+	intServerID, ok := server.ServerID.(int)
 	if !ok {
-		return fmt.Errorf("%v is not an int", serverID)
+		return fmt.Errorf("%v is not an int", server.ServerID)
 	}
 
 	fmt.Println("Deleting droplet...")
@@ -156,10 +157,10 @@ func (p *Provider) RemoveServer(ctx context.Context, serverID interface{}) error
 }
 
 // RemoveDNSRecord removes a DNS A Record from DigitalOcean
-func (p *Provider) RemoveDNSRecord(ctx context.Context, subDomainID interface{}) error {
-	intSubDomainID, ok := subDomainID.(int)
+func (p *Provider) RemoveDNSRecord(ctx context.Context, subDomain *common.CreateDNSRecordResponse) error {
+	intSubDomainID, ok := subDomain.SubDomainID.(int)
 	if !ok {
-		return fmt.Errorf("%v is not an int", subDomainID)
+		return fmt.Errorf("%v is not an int", subDomain.SubDomainID)
 	}
 
 	fmt.Println("Deleting Domain Record...")
