@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"os"
 	"text/template"
@@ -12,7 +13,50 @@ import (
 	"github.com/Masterminds/sprig"
 	"github.com/sas-fe/cloud-provider-tools"
 	"github.com/sas-fe/cloud-provider-tools/common"
+	yaml "gopkg.in/yaml.v2"
 )
+
+// Files contain template files
+type Files struct {
+	DockerCompose string
+	NginxConf     string
+}
+
+// Values contain template values
+type Values struct {
+	Username       string `yaml:"username"`
+	DockerUser     string `yaml:"dockerUser"`
+	DockerPassword string `yaml:"dockerPassword"`
+
+	Service struct {
+		Name      string `yaml:"name"`
+		ImageRepo string `yaml:"imageRepo"`
+		ImageTag  string `yaml:"imageTag"`
+
+		Ports []struct {
+			Port     int    `yaml:"port"`
+			Protocol string `yaml:"protocol"`
+		} `yaml:"ports"`
+	} `yaml:"service"`
+
+	Ingress struct {
+		Port    int  `yaml:"port"`
+		Upgrade bool `yaml:"upgrade"`
+
+		TLS struct {
+			Bucket string `yaml:"bucket"`
+			Path   string `yaml:"path"`
+			Cert   string `yaml:"cert"`
+			Key    string `yaml:"key"`
+		} `yaml:"tls"`
+	} `yaml:"ingress"`
+}
+
+// Config wraps both template files and values
+type Config struct {
+	Files  *Files
+	Values *Values
+}
 
 func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -28,52 +72,27 @@ func srand(length int) string {
 	return string(buf)
 }
 
-// Port exports the port number and type
-type Port struct {
-	Number int
-	Type   string
-}
+func readValues(v *Values) error {
+	yamlFile, err := ioutil.ReadFile("./example/values.yaml")
+	if err != nil {
+		return err
+	}
 
-// Service contains service config values
-type Service struct {
-	Name      string
-	VolRoot   string
-	Domain    string
-	SubDomain string
-	Image     string
-	Ports     []Port
-}
+	err = yaml.Unmarshal(yamlFile, v)
+	if err != nil {
+		return err
+	}
 
-// Config contain template values
-type Config struct {
-	UserName      string
-	UserHome      string
-	Commands      []string
-	DockerCompose string
-	NginxConf     string
-}
-
-// Ingress contains config values for ingress service
-type Ingress struct {
-	ServicePort int
-	Upgrade     bool
-	Service     Service
+	return nil
 }
 
 func main() {
-	username := "testuser"
-	userhome := "/home/" + username
 	serverName := "face-recognition-" + srand(12)
 	subDomain := serverName + "." + "instances"
 
 	domain := os.Getenv("DOMAIN")
 	if len(domain) == 0 {
 		panic("$DOMAIN not set")
-	}
-
-	gcpImageURL := os.Getenv("GCP_SOURCE_IMAGE")
-	if len(gcpImageURL) == 0 {
-		panic("$GCP_SOURCE_IMAGE not set")
 	}
 
 	dockerUser := os.Getenv("DOCKER_USER")
@@ -86,59 +105,36 @@ func main() {
 		panic("$DOCKER_PASSWORD not set")
 	}
 
-	dockerImage := os.Getenv("DOCKER_IMAGE")
-	if len(dockerImage) == 0 {
-		panic("$DOCKER_IMAGE not set")
+	gcpImageURL := os.Getenv("GCP_SOURCE_IMAGE")
+	if len(gcpImageURL) == 0 {
+		gcpImageURL = "projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20180912"
 	}
+
+	files := Files{}
+	values := Values{}
+	config := Config{&files, &values}
+
+	err := readValues(&values)
+	if err != nil {
+		panic(err)
+	}
+	values.DockerUser = dockerUser
+	values.DockerPassword = dockerPW
 
 	t := template.Must(template.New("config").Funcs(sprig.TxtFuncMap()).ParseGlob("./example/templates/*"))
 
-	service := Service{
-		Name:      "face-recognition",
-		VolRoot:   userhome,
-		Domain:    domain,
-		SubDomain: subDomain,
-		Image:     dockerImage,
-		Ports: []Port{
-			Port{8080, "HTTP"},
-			Port{1935, "TCP"},
-			Port{10001, "TCP"},
-		},
-	}
-
 	composeBuf := new(bytes.Buffer)
-	if err := t.ExecuteTemplate(composeBuf, "docker-compose.yaml", service); err != nil {
+	if err := t.ExecuteTemplate(composeBuf, "docker-compose.yaml", config); err != nil {
 		panic(err)
-	}
-
-	nConf := Ingress{
-		ServicePort: 8080,
-		Upgrade:     true,
-		Service:     service,
 	}
 
 	nginxBuf := new(bytes.Buffer)
-	if err := t.ExecuteTemplate(nginxBuf, "nginx.conf", nConf); err != nil {
+	if err := t.ExecuteTemplate(nginxBuf, "nginx.conf", config); err != nil {
 		panic(err)
 	}
 
-	installDocker := fmt.Sprintf("curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh")
-	installCompose := fmt.Sprintf("curl -L 'https://github.com/docker/compose/releases/download/1.11.2/docker-compose-Linux-x86_64' -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose")
-	dockerLogin := fmt.Sprintf("docker login --username=%s --password=%s", dockerUser, dockerPW)
-	dockerPull := fmt.Sprintf("docker-compose -f /home/%s/docker-compose.yaml pull", username)
-	dockerUp := fmt.Sprintf("runuser -l %s -c 'sudo docker-compose -f /home/%s/docker-compose.yaml up -d'", username, username)
-	config := Config{
-		UserName:      username,
-		UserHome:      userhome,
-		DockerCompose: string(composeBuf.Bytes()),
-		NginxConf:     string(nginxBuf.Bytes()),
-	}
-	config.Commands = []string{}
-	config.Commands = append(config.Commands, installDocker)
-	config.Commands = append(config.Commands, installCompose)
-	config.Commands = append(config.Commands, dockerLogin)
-	config.Commands = append(config.Commands, dockerPull)
-	config.Commands = append(config.Commands, dockerUp)
+	files.DockerCompose = string(composeBuf.Bytes())
+	files.NginxConf = string(nginxBuf.Bytes())
 
 	configBuf := new(bytes.Buffer)
 	if err := t.ExecuteTemplate(configBuf, "cloud-config.yaml", config); err != nil {
