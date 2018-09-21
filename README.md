@@ -63,5 +63,25 @@ Supported options include:
 - Region: e.g. `common.ServerRegion("nyc1")`
 - Size: e.g. `common.ServerSize("s-1vcpu-1gb")`
 - Image ID: e.g. `common.ServerImage("31734516")`
-- Startup Script: e.g. `common.ServerScript("#!/bin/bash\necho 'Hello, World!'")`
+- Startup Script/User Data: e.g. `common.ServerScript("#!/bin/bash\necho 'Hello, World!'")`
+- Tags: e.g. `common.ServerTags([]string{"OnDemand"})`
+
+
+## Google Compute Engine Provider Settings
+
+### Creating GCE Provider Instance
+`cpt.NewCloudProvider(cpt.GCE)` requires several environment variables to be set:
+- `$GOOGLE_APPLICATION_CREDENTIALS`: service account file path for google ADC
+- `$GCP_PROJECT`: GCP project to use
+- `$GCP_DNS_ZONE`: Cloud DNS manage zone to use 
+- `$DOMAIN`: base domain name
+Those can also be manually passed in via `gce.NewProvider()`.
+
+### Creating GCE Instances
+The GCE provider recognizes several `common.ServerOption`s to customize instances.
+Supported options include:
+- Zone: e.g. `common.ServerRegion(us-east1-c)`
+- Machine Type: e.g. `common.ServerSize("n1-highcpu-4")`
+- Source Image: e.g. `common.ServerImage("projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20180912")`
+- Startup Script/User Data: e.g. `common.ServerScript("#!/bin/bash\necho 'Hello, World!'")`
 - Tags: e.g. `common.ServerTags([]string{"OnDemand"})`
