@@ -1,0 +1,20 @@
+username: feuser
+service:
+  name: face-recognition
+  imageRepo: sasfe/face-recognition
+  imageTag: dev_d464bdfcccb60513c807cc23ccb58792576a759f
+  ports:
+  - port: 8080
+    protocol: TCP
+  - port: 1935
+    protocol: TCP
+  - port: 10001
+    protocol: TCP
+ingress:
+  port: 8080
+  upgrade: true
+  tls:
+    bucket: kubernetessandbox-tls
+    path: /secrets/tls
+    cert: tls.crt
+    key: tls.key
