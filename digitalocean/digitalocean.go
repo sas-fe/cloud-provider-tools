@@ -3,6 +3,7 @@ package digitalocean
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -171,4 +172,34 @@ func (p *Provider) RemoveDNSRecord(ctx context.Context, subDomain *common.Create
 	fmt.Println("Done")
 
 	return nil
+}
+
+// CreateServerGroup unimplemented for DigitalOcean
+func (p *Provider) CreateServerGroup(ctx context.Context, name string, opts ...common.ServerOption) (*common.CreateServerGroupResponse, error) {
+	return nil, errors.New("Unimplemented")
+}
+
+// RemoveServerGroup unimplemented for DigitalOcean
+func (p *Provider) RemoveServerGroup(ctx context.Context, group *common.CreateServerGroupResponse) error {
+	return errors.New("Unimplemented")
+}
+
+// CreateK8s unimplemented for DigitalOcean
+func (p *Provider) CreateK8s(ctx context.Context, name string, opts ...common.ServerOption) (*common.CreateK8sResponse, error) {
+	return nil, errors.New("Unimplemented")
+}
+
+// RemoveK8s unimplemented for DigitalOcean
+func (p *Provider) RemoveK8s(ctx context.Context, k8s *common.CreateK8sResponse) error {
+	return errors.New("Unimplemented")
+}
+
+// CreateStaticIP unimplemented for DigitalOcean
+func (p *Provider) CreateStaticIP(ctx context.Context, name string) (*common.CreateStaticIPResponse, error) {
+	return nil, errors.New("Unimplemented")
+}
+
+// RemoveStaticIP unimplemented for DigitalOcean
+func (p *Provider) RemoveStaticIP(ctx context.Context, staticIP *common.CreateStaticIPResponse) error {
+	return errors.New("Unimplemented")
 }

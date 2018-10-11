@@ -1,0 +1,5 @@
+cas:
+  image: gcr.io/kubernetessandbox/cas
+
+elasticsearch:
+  image: gcr.io/kubernetessandbox/elasticsearch

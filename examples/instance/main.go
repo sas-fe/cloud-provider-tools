@@ -73,7 +73,7 @@ func srand(length int) string {
 }
 
 func readValues(v *Values) error {
-	yamlFile, err := ioutil.ReadFile("./example/values.yaml")
+	yamlFile, err := ioutil.ReadFile("./examples/instance/values.yaml")
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func main() {
 	values.DockerUser = dockerUser
 	values.DockerPassword = dockerPW
 
-	t := template.Must(template.New("config").Funcs(sprig.TxtFuncMap()).ParseGlob("./example/templates/*"))
+	t := template.Must(template.New("config").Funcs(sprig.TxtFuncMap()).ParseGlob("./examples/instance/templates/*"))
 
 	composeBuf := new(bytes.Buffer)
 	if err := t.ExecuteTemplate(composeBuf, "docker-compose.yaml", config); err != nil {

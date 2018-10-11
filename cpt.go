@@ -29,8 +29,18 @@ const (
 type CloudProvider interface {
 	CreateServer(ctx context.Context, name string, opts ...common.ServerOption) (*common.CreateServerResponse, error)
 	RemoveServer(ctx context.Context, server *common.CreateServerResponse) error
+
+	CreateServerGroup(ctx context.Context, name string, opts ...common.ServerOption) (*common.CreateServerGroupResponse, error)
+	RemoveServerGroup(ctx context.Context, group *common.CreateServerGroupResponse) error
+
+	CreateK8s(ctx context.Context, name string, opts ...common.ServerOption) (*common.CreateK8sResponse, error)
+	RemoveK8s(ctx context.Context, k8s *common.CreateK8sResponse) error
+
 	CreateDNSRecord(ctx context.Context, name string, IP string) (*common.CreateDNSRecordResponse, error)
 	RemoveDNSRecord(ctx context.Context, subDomain *common.CreateDNSRecordResponse) error
+
+	CreateStaticIP(ctx context.Context, name string) (*common.CreateStaticIPResponse, error)
+	RemoveStaticIP(ctx context.Context, staticIP *common.CreateStaticIPResponse) error
 }
 
 var _ CloudProvider = (*digitalocean.Provider)(nil)

@@ -1,0 +1,32 @@
+datahub:
+  image: gcr.io/kubernetessandbox/svi-datahub
+
+feature:
+  image: gcr.io/kubernetessandbox/feature
+
+sviai:
+  image: gcr.io/kubernetessandbox/svi-ai
+
+svialert:
+  image: gcr.io/kubernetessandbox/svi-alert
+
+sviaudit:
+  image: gcr.io/kubernetessandbox/svi-audit
+
+svientityresolution:
+  image: gcr.io/kubernetessandbox/svi-entity-resolution
+
+svinetworkanalytics:
+  image: gcr.io/kubernetessandbox/svi-network-analytics
+
+svisand:
+  image: gcr.io/kubernetessandbox/svi-sand
+
+svitransport:
+  image: gcr.io/kubernetessandbox/svi-transport
+
+svivisualinvestigator:
+  image: gcr.io/kubernetessandbox/svi-visual-investigator
+
+svivsdservice:
+  image: gcr.io/kubernetessandbox/svi-vsd-service

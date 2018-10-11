@@ -1,0 +1,53 @@
+appregistry:
+  image: gcr.io/kubernetessandbox/appregistry
+
+authorization:
+  image: gcr.io/kubernetessandbox/authorization
+
+configuration:
+  image: gcr.io/kubernetessandbox/configuration
+
+files:
+  image: gcr.io/kubernetessandbox/files
+
+identities:
+  image: gcr.io/kubernetessandbox/identities
+
+logon:
+  image: gcr.io/kubernetessandbox/logon
+
+tenant:
+  image: gcr.io/kubernetessandbox/tenant
+
+preferences:
+  image: gcr.io/kubernetessandbox/preferences
+
+relationships:
+  image: gcr.io/kubernetessandbox/relationships
+
+themecontent:
+  image: gcr.io/kubernetessandbox/themecontent
+
+themes:
+  image: gcr.io/kubernetessandbox/themes
+
+types:
+  image: gcr.io/kubernetessandbox/types
+
+fonts:
+  image: gcr.io/kubernetessandbox/fonts
+
+folders:
+  image: gcr.io/kubernetessandbox/folders
+
+htmlcommons80:
+  image: gcr.io/kubernetessandbox/htmlcommons-static
+
+htmlcommons:
+  image: gcr.io/kubernetessandbox/basestatic
+
+credentials:
+  image: gcr.io/kubernetessandbox/credentials
+
+themedesigner:
+  image: gcr.io/kubernetessandbox/themedesigner

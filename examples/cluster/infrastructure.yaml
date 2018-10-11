@@ -1,0 +1,20 @@
+consul:
+  image: gcr.io/kubernetessandbox/consul
+
+httpd:
+  image: gcr.io/kubernetessandbox/httpd
+
+cacheserver:
+  image: gcr.io/kubernetessandbox/cacheserver
+
+cachelocator:
+  image: gcr.io/kubernetessandbox/cachelocator
+
+openldap:
+  image: gcr.io/kubernetessandbox/openldap
+
+postgres:
+  image: gcr.io/kubernetessandbox/postgres
+
+rabbitmq:
+  image: gcr.io/kubernetessandbox/rabbitmq

@@ -16,4 +16,4 @@ images.json
 .env
 
 scratch/
-
+vendor/
