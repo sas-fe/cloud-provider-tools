@@ -15,14 +15,54 @@ type CreateDNSRecordResponse struct {
 	SubDomainIP string
 }
 
+// CreateServerGroupResponse contains the reponse from creating a server group
+type CreateServerGroupResponse struct {
+	Name              string
+	ServerGroupID     interface{}
+	ServerGroupRegion string
+	LoadBalancerID    string
+	LoadBalancerIP    string
+}
+
+// ClusterCredentials contain credentials for the k8s cluster
+type ClusterCredentials struct {
+	Username    string
+	Password    string
+	Certificate string
+}
+
+// CreateK8sResponse contains the response from K8s deployment
+type CreateK8sResponse struct {
+	Name          string
+	ClusterID     interface{}
+	ClusterRegion string
+	EndpointIP    string
+	EndpointPort  string
+	Credentials   *ClusterCredentials
+}
+
+// CreateStaticIPResponse contains the response from creating a static IP
+type CreateStaticIPResponse struct {
+	Name     string
+	StaticIP string
+}
+
+// AutoScaleOpt contains fields for k8s autoscaling
+type AutoScaleOpt struct {
+	Enabled  bool
+	MinNodes int64
+	MaxNodes int64
+}
+
 // ServerInfo contains configuration information for the server
 type ServerInfo struct {
-	Name     string
-	Size     string
-	Region   string
-	Image    string
-	UserData string
-	Tags     []string
+	Name      string
+	Size      string
+	AutoScale *AutoScaleOpt
+	Region    string
+	Image     string
+	UserData  string
+	Tags      []string
 }
 
 // ServerOption configures a server for creation
@@ -108,4 +148,20 @@ func (o TagsServerOption) Set(s *ServerInfo) error {
 // ServerTags returns a ServerOption that sets the tags
 func ServerTags(tags []string) ServerOption {
 	return TagsServerOption{tags}
+}
+
+// AutoScaleServerOption configures the k8s autoscaling
+type AutoScaleServerOption struct {
+	AutoScale *AutoScaleOpt
+}
+
+// Set sets the k8s autoscaling
+func (o AutoScaleServerOption) Set(s *ServerInfo) error {
+	s.AutoScale = o.AutoScale
+	return nil
+}
+
+// ServerAutoScale returns a ServerOption that sets the k8s autoscaling
+func ServerAutoScale(opt *AutoScaleOpt) ServerOption {
+	return AutoScaleServerOption{opt}
 }

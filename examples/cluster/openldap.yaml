@@ -1,0 +1,7 @@
+persistentVolume:
+  dynamicProvisioning: true
+  accessModes:
+  - ReadWriteOnce
+
+openldap:
+  image: gcr.io/kubernetessandbox/openldap

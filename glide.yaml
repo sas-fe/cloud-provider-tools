@@ -1,0 +1,8 @@
+package: github.com/sas-fe/cloud-provider-tools
+import:
+- package: k8s.io/client-go
+  version: kubernetes-1.11.1
+  subpackages:
+  - kubernetes
+  - rest
+  - kubernetes@release-1.11.1
