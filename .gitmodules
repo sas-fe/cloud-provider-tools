@@ -1,4 +1,0 @@
-[submodule "examples/cluster/helm-scripts"]
-	path = examples/cluster/helm-scripts
-	url = git@gitlab.sas.com:forward-engineering/helm-scripts.git
-	branch = gcp

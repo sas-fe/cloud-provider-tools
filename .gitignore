@@ -17,3 +17,5 @@ images.json
 
 scratch/
 vendor/
+
+example/cluster/helm-scripts
