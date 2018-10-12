@@ -56,13 +56,14 @@ type AutoScaleOpt struct {
 
 // ServerInfo contains configuration information for the server
 type ServerInfo struct {
-	Name      string
-	Size      string
-	AutoScale *AutoScaleOpt
-	Region    string
-	Image     string
-	UserData  string
-	Tags      []string
+	Name       string
+	Size       string
+	AutoScale  *AutoScaleOpt
+	Region     string
+	Image      string
+	K8sVersion string
+	UserData   string
+	Tags       []string
 }
 
 // ServerOption configures a server for creation
@@ -161,7 +162,23 @@ func (o AutoScaleServerOption) Set(s *ServerInfo) error {
 	return nil
 }
 
-// ServerAutoScale returns a ServerOption that sets the k8s autoscaling
-func ServerAutoScale(opt *AutoScaleOpt) ServerOption {
+// AutoScale returns a ServerOption that sets the k8s autoscaling
+func AutoScale(opt *AutoScaleOpt) ServerOption {
 	return AutoScaleServerOption{opt}
+}
+
+// K8sVersionServerOption configures the k8s version
+type K8sVersionServerOption struct {
+	Version string
+}
+
+// Set sets the k8s autoscaling
+func (o K8sVersionServerOption) Set(s *ServerInfo) error {
+	s.K8sVersion = o.Version
+	return nil
+}
+
+// K8sVersion returns a ServerOption that sets the k8s version
+func K8sVersion(version string) ServerOption {
+	return K8sVersionServerOption{version}
 }

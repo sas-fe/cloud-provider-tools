@@ -270,7 +270,7 @@ func (p *Provider) CreateK8s(ctx context.Context, name string, opts ...common.Se
 	region := zone[:len(zone)-2]
 	machineType := s.Size
 	autoScaling := &container.NodePoolAutoscaling{}
-	version := "1.10.6-gke.4"
+	version := s.K8sVersion
 
 	if s.AutoScale != nil {
 		autoScaling = &container.NodePoolAutoscaling{

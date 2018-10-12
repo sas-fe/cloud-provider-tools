@@ -185,11 +185,12 @@ func main() {
 		clusterName,
 		common.ServerRegion("us-east1-c"),
 		common.ServerSize("n1-standard-4"),
-		common.ServerAutoScale(&common.AutoScaleOpt{
+		common.AutoScale(&common.AutoScaleOpt{
 			Enabled:  true,
 			MinNodes: 3,
 			MaxNodes: 10,
 		}),
+		common.K8sVersion("1.10.6-gke.6"),
 	)
 	if err != nil {
 		panic(err)
