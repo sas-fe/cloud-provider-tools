@@ -269,10 +269,12 @@ func (p *Provider) CreateK8s(ctx context.Context, name string, opts ...common.Se
 	zone := s.Region
 	region := zone[:len(zone)-2]
 	machineType := s.Size
+	initialCount := int64(3)
 	autoScaling := &container.NodePoolAutoscaling{}
 	version := s.K8sVersion
 
 	if s.AutoScale != nil {
+		initialCount = s.AutoScale.MinNodes
 		autoScaling = &container.NodePoolAutoscaling{
 			Enabled:      s.AutoScale.Enabled,
 			MinNodeCount: s.AutoScale.MinNodes,
@@ -315,7 +317,7 @@ func (p *Provider) CreateK8s(ctx context.Context, name string, opts ...common.Se
 					ImageType: "COS",
 					// DiskType:  "pd-standard",
 				},
-				InitialNodeCount: 3,
+				InitialNodeCount: initialCount,
 				Autoscaling:      autoScaling,
 				Management: &container.NodeManagement{
 					AutoUpgrade: true,
