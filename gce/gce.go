@@ -388,16 +388,15 @@ func (p *Provider) RemoveK8s(ctx context.Context, k8s *common.CreateK8sResponse)
 
 // CreateStaticIP creates a static IP on GCE
 func (p *Provider) CreateStaticIP(ctx context.Context, name string, ipType common.StaticIPType) (*common.CreateStaticIPResponse, error) {
-	address := &compute.Address{
-		Name:      name,
-		IpVersion: "IPV4",
-		// NetworkTier: "PREMIUM",
-	}
-
 	addr := ""
 
 	switch ipType {
 	case common.GLOBAL:
+		address := &compute.Address{
+			Name:      name,
+			IpVersion: "IPV4",
+		}
+
 		_, err := p.computeSvc.GlobalAddresses.Insert(p.projectID, address).Context(ctx).Do()
 		if err != nil {
 			return nil, err
@@ -420,7 +419,11 @@ func (p *Provider) CreateStaticIP(ctx context.Context, name string, ipType commo
 			}
 		}
 	case common.REGIONAL:
+		address := &compute.Address{
+			Name: name,
+		}
 		region := "us-east1"
+
 		_, err := p.computeSvc.Addresses.Insert(p.projectID, region, address).Context(ctx).Do()
 		if err != nil {
 			return nil, err
