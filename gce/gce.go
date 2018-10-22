@@ -3,6 +3,7 @@ package gce
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -395,7 +396,8 @@ func (p *Provider) CreateStaticIP(ctx context.Context, name string, ipType commo
 
 	addr := ""
 
-	if ipType == common.GLOBAL {
+	switch ipType {
+	case common.GLOBAL:
 		_, err := p.computeSvc.GlobalAddresses.Insert(p.projectID, address).Context(ctx).Do()
 		if err != nil {
 			return nil, err
@@ -417,9 +419,7 @@ func (p *Provider) CreateStaticIP(ctx context.Context, name string, ipType commo
 				time.Sleep(15 * time.Second)
 			}
 		}
-	}
-
-	if ipType == common.REGIONAL {
+	case common.REGIONAL:
 		region := "us-east1"
 		_, err := p.computeSvc.Addresses.Insert(p.projectID, region, address).Context(ctx).Do()
 		if err != nil {
@@ -441,6 +441,8 @@ func (p *Provider) CreateStaticIP(ctx context.Context, name string, ipType commo
 				time.Sleep(15 * time.Second)
 			}
 		}
+	default:
+		return nil, fmt.Errorf("Static IP Type: %v is not supported", ipType)
 	}
 
 	return &common.CreateStaticIPResponse{
@@ -452,9 +454,20 @@ func (p *Provider) CreateStaticIP(ctx context.Context, name string, ipType commo
 
 // RemoveStaticIP removes a global static IP on GCE
 func (p *Provider) RemoveStaticIP(ctx context.Context, staticIP *common.CreateStaticIPResponse) error {
-	_, err := p.computeSvc.GlobalAddresses.Delete(p.projectID, staticIP.Name).Context(ctx).Do()
-	if err != nil {
-		return err
+	switch ipType := staticIP.Type; ipType {
+	case common.GLOBAL:
+		_, err := p.computeSvc.GlobalAddresses.Delete(p.projectID, staticIP.Name).Context(ctx).Do()
+		if err != nil {
+			return err
+		}
+	case common.REGIONAL:
+		region := "us-east1"
+		_, err := p.computeSvc.Addresses.Delete(p.projectID, region, staticIP.Name).Context(ctx).Do()
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("Static IP Type: %v is not supported", ipType)
 	}
 
 	return nil
