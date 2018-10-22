@@ -166,7 +166,7 @@ func main() {
 	ctx := context.TODO()
 
 	fmt.Println("Acquiring global static IP")
-	ipResp, err := p.CreateStaticIP(ctx, clusterName)
+	ipResp, err := p.CreateStaticIP(ctx, clusterName, common.GLOBAL)
 	if err != nil {
 		panic(err)
 	}

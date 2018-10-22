@@ -385,40 +385,68 @@ func (p *Provider) RemoveK8s(ctx context.Context, k8s *common.CreateK8sResponse)
 	return nil
 }
 
-// CreateStaticIP creates a global static IP on GCE
-func (p *Provider) CreateStaticIP(ctx context.Context, name string) (*common.CreateStaticIPResponse, error) {
+// CreateStaticIP creates a static IP on GCE
+func (p *Provider) CreateStaticIP(ctx context.Context, name string, ipType common.StaticIPType) (*common.CreateStaticIPResponse, error) {
 	address := &compute.Address{
 		Name:      name,
 		IpVersion: "IPV4",
 		// NetworkTier: "PREMIUM",
 	}
 
-	_, err := p.computeSvc.GlobalAddresses.Insert(p.projectID, address).Context(ctx).Do()
-	if err != nil {
-		return nil, err
-	}
-
-	time.Sleep(15 * time.Second)
-
 	addr := ""
-	ready := false
-	for !ready {
-		resp, err := p.computeSvc.GlobalAddresses.Get(p.projectID, name).Context(ctx).Do()
+
+	if ipType == common.GLOBAL {
+		_, err := p.computeSvc.GlobalAddresses.Insert(p.projectID, address).Context(ctx).Do()
 		if err != nil {
 			return nil, err
 		}
 
-		if len(resp.Address) > 0 {
-			ready = true
-			addr = resp.Address
-		} else {
-			time.Sleep(15 * time.Second)
+		time.Sleep(15 * time.Second)
+
+		ready := false
+		for !ready {
+			resp, err := p.computeSvc.GlobalAddresses.Get(p.projectID, name).Context(ctx).Do()
+			if err != nil {
+				return nil, err
+			}
+
+			if len(resp.Address) > 0 {
+				ready = true
+				addr = resp.Address
+			} else {
+				time.Sleep(15 * time.Second)
+			}
+		}
+	}
+
+	if ipType == common.REGIONAL {
+		region := "us-east1"
+		_, err := p.computeSvc.Addresses.Insert(p.projectID, region, address).Context(ctx).Do()
+		if err != nil {
+			return nil, err
+		}
+
+		time.Sleep(15 * time.Second)
+		ready := false
+		for !ready {
+			resp, err := p.computeSvc.Addresses.Get(p.projectID, region, name).Context(ctx).Do()
+			if err != nil {
+				return nil, err
+			}
+
+			if len(resp.Address) > 0 {
+				ready = true
+				addr = resp.Address
+			} else {
+				time.Sleep(15 * time.Second)
+			}
 		}
 	}
 
 	return &common.CreateStaticIPResponse{
 		Name:     name,
 		StaticIP: addr,
+		Type:     ipType,
 	}, nil
 }
 

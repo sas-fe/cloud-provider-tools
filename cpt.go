@@ -39,7 +39,7 @@ type CloudProvider interface {
 	CreateDNSRecord(ctx context.Context, name string, IP string) (*common.CreateDNSRecordResponse, error)
 	RemoveDNSRecord(ctx context.Context, subDomain *common.CreateDNSRecordResponse) error
 
-	CreateStaticIP(ctx context.Context, name string) (*common.CreateStaticIPResponse, error)
+	CreateStaticIP(ctx context.Context, name string, ipType common.StaticIPType) (*common.CreateStaticIPResponse, error)
 	RemoveStaticIP(ctx context.Context, staticIP *common.CreateStaticIPResponse) error
 }
 

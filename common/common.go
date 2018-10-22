@@ -41,10 +41,21 @@ type CreateK8sResponse struct {
 	Credentials   *ClusterCredentials
 }
 
+// StaticIPType enums the type of static IP
+type StaticIPType int
+
+const (
+	// GLOBAL static IP
+	GLOBAL StaticIPType = 0
+	// REGIONAL static IP
+	REGIONAL StaticIPType = 1
+)
+
 // CreateStaticIPResponse contains the response from creating a static IP
 type CreateStaticIPResponse struct {
 	Name     string
 	StaticIP string
+	Type     StaticIPType
 }
 
 // AutoScaleOpt contains fields for k8s autoscaling
