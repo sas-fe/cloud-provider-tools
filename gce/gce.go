@@ -387,10 +387,10 @@ func (p *Provider) RemoveK8s(ctx context.Context, k8s *common.CreateK8sResponse)
 }
 
 // CreateStaticIP creates a static IP on GCE
-func (p *Provider) CreateStaticIP(ctx context.Context, name string, ipType common.StaticIPType) (*common.CreateStaticIPResponse, error) {
+func (p *Provider) CreateStaticIP(ctx context.Context, name string, req *common.StaticIPRequest) (*common.CreateStaticIPResponse, error) {
 	addr := ""
 
-	switch ipType {
+	switch req.IPType {
 	case common.GLOBAL:
 		address := &compute.Address{
 			Name:      name,
@@ -422,9 +422,8 @@ func (p *Provider) CreateStaticIP(ctx context.Context, name string, ipType commo
 		address := &compute.Address{
 			Name: name,
 		}
-		region := "us-east1"
 
-		_, err := p.computeSvc.Addresses.Insert(p.projectID, region, address).Context(ctx).Do()
+		_, err := p.computeSvc.Addresses.Insert(p.projectID, req.Region, address).Context(ctx).Do()
 		if err != nil {
 			return nil, err
 		}
@@ -432,7 +431,7 @@ func (p *Provider) CreateStaticIP(ctx context.Context, name string, ipType commo
 		time.Sleep(15 * time.Second)
 		ready := false
 		for !ready {
-			resp, err := p.computeSvc.Addresses.Get(p.projectID, region, name).Context(ctx).Do()
+			resp, err := p.computeSvc.Addresses.Get(p.projectID, req.Region, name).Context(ctx).Do()
 			if err != nil {
 				return nil, err
 			}
@@ -445,13 +444,14 @@ func (p *Provider) CreateStaticIP(ctx context.Context, name string, ipType commo
 			}
 		}
 	default:
-		return nil, fmt.Errorf("Static IP Type: %v is not supported", ipType)
+		return nil, fmt.Errorf("Static IP Type: %v is not supported", req.IPType)
 	}
 
 	return &common.CreateStaticIPResponse{
 		Name:     name,
 		StaticIP: addr,
-		Type:     ipType,
+		Type:     req.IPType,
+		Region:   req.Region,
 	}, nil
 }
 
@@ -464,8 +464,7 @@ func (p *Provider) RemoveStaticIP(ctx context.Context, staticIP *common.CreateSt
 			return err
 		}
 	case common.REGIONAL:
-		region := "us-east1"
-		_, err := p.computeSvc.Addresses.Delete(p.projectID, region, staticIP.Name).Context(ctx).Do()
+		_, err := p.computeSvc.Addresses.Delete(p.projectID, staticIP.Region, staticIP.Name).Context(ctx).Do()
 		if err != nil {
 			return err
 		}

@@ -51,11 +51,18 @@ const (
 	REGIONAL StaticIPType = 1
 )
 
+// StaticIPRequest contains the requested static IP type and region (for regional IPs)
+type StaticIPRequest struct {
+	IPType StaticIPType
+	Region string
+}
+
 // CreateStaticIPResponse contains the response from creating a static IP
 type CreateStaticIPResponse struct {
 	Name     string
 	StaticIP string
 	Type     StaticIPType
+	Region   string
 }
 
 // AutoScaleOpt contains fields for k8s autoscaling
