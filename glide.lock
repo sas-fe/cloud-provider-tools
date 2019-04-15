@@ -1,12 +1,40 @@
-hash: 86f02ff1ab58ca55c721bfc70a9ee815aa3f81a0fc117a3f5302b9aadb1f228f
-updated: 2018-10-08T16:04:00.967095-04:00
+hash: 3d3710e7823e66c8c3d8b75f064144bcc99bb67810af9ab04c18f2e7d41631b1
+updated: 2019-04-15T13:07:41.029157-04:00
 imports:
 - name: cloud.google.com/go
-  version: be58d9a00708167c7fc48efeb85a1cbf952a27be
+  version: 2fa99f4c25c422525316dcb1fd3d5b94e1944cfd
   subpackages:
   - compute/metadata
-- name: github.com/aokoli/goutils
-  version: 3391d3790d23d03408670993e957e8f408993c34
+- name: github.com/aws/aws-sdk-go
+  version: 760741802ad40f49ae9fc4a69ef6706d2527d62e
+  subpackages:
+  - aws
+  - aws/awserr
+  - aws/awsutil
+  - aws/client
+  - aws/client/metadata
+  - aws/corehandlers
+  - aws/credentials
+  - aws/credentials/ec2rolecreds
+  - aws/credentials/endpointcreds
+  - aws/credentials/stscreds
+  - aws/defaults
+  - aws/ec2metadata
+  - aws/endpoints
+  - aws/request
+  - aws/session
+  - aws/signer/v4
+  - internal/shareddefaults
+  - private/protocol
+  - private/protocol/ec2query
+  - private/protocol/query
+  - private/protocol/query/queryutil
+  - private/protocol/rest
+  - private/protocol/restxml
+  - private/protocol/xml/xmlutil
+  - service/ec2
+  - service/route53
+  - service/sts
 - name: github.com/Azure/go-ansiterm
   version: 19f72df4d05d31cbe1c56bfc8045c96babff6c7e
   subpackages:
@@ -25,7 +53,7 @@ imports:
   subpackages:
   - spew
 - name: github.com/digitalocean/godo
-  version: b3d09280464f50e8d0a007f14638c10a11fcf3fd
+  version: 252753eb38a250de1c7e20cf03a737e9763c052d
 - name: github.com/docker/distribution
   version: edc3ab29cdff8694dd6feb85cfeb4b5f1b38ed9c
   subpackages:
@@ -84,6 +112,8 @@ imports:
   version: f6a740d52f961c60348ebb109adde9f4635d7540
 - name: github.com/ghodss/yaml
   version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
+- name: github.com/go-ini/ini
+  version: 3be5ad479f69d4e08d7fe25edf79bf3346bd658e
 - name: github.com/go-openapi/jsonpointer
   version: 46af16f9f7b149af66e5d1bd010e3574dc06de98
 - name: github.com/go-openapi/jsonreference
@@ -124,7 +154,7 @@ imports:
 - name: github.com/google/btree
   version: 7d79101e329e5a3adf994758c578dab82b90c017
 - name: github.com/google/go-querystring
-  version: 44c6ddd0a2342c386950e880b658017258da92fc
+  version: c8c88dbee036db4e4808d1f2ec8c2e15e11c3f80
   subpackages:
   - query
 - name: github.com/google/gofuzz
@@ -146,11 +176,13 @@ imports:
   subpackages:
   - simplelru
 - name: github.com/huandu/xstrings
-  version: 8bbcf2f9ccb55755e748b7644164cd4bdce94c1d
+  version: f02667b379e2fb5916c3cda2cf31e0eb885d79f8
 - name: github.com/imdario/mergo
-  version: 6633656539c1639d9d78127b7d47c622b5d7b6dc
+  version: 7c29201646fa3de8506f701213473dd407f19646
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/jmespath/go-jmespath
+  version: c2b33e8439af944379acbdd9c3a5fe0bc44bd8a5
 - name: github.com/json-iterator/go
   version: f2b4162afba35581b6d4a50d3b8f34e33c144682
 - name: github.com/mailru/easyjson
@@ -161,10 +193,12 @@ imports:
   - jwriter
 - name: github.com/MakeNowJust/heredoc
   version: bb23615498cded5e105af4ce27de75b089cbe851
+- name: github.com/Masterminds/goutils
+  version: 41ac8693c5c10a92ea1ff5ac3a7f95646f6123b0
 - name: github.com/Masterminds/semver
   version: 517734cc7d6470c0d07130e40fd40bdeb9bcd3fd
 - name: github.com/Masterminds/sprig
-  version: 15f9564e7e9cf0da02a48e0d25f12a7b83559aa6
+  version: b1fe2752acccf8c3d7f8a1e7c75c7ae7d83a1975
 - name: github.com/mitchellh/go-wordwrap
   version: ad45545899c7b13c020ea92b2072220eefad42b8
 - name: github.com/modern-go/concurrent
@@ -194,8 +228,6 @@ imports:
   version: c439c4fa093711d42e1b01acb1235b52004753c1
 - name: github.com/spf13/pflag
   version: 583c0c0531f06d5278b7d917446061adc344b5cd
-- name: github.com/tent/http-link-go
-  version: ac974c61c2f990f4115b119354b5e0b47550e888
 - name: golang.org/x/crypto
   version: 49796115aa4b964c318aad4f3084fdb41e9aa067
   subpackages:
@@ -216,7 +248,7 @@ imports:
   - lex/httplex
   - trace
 - name: golang.org/x/oauth2
-  version: 9a379c6b3e95a790ffc43293c2a78dee0d7b6e20
+  version: 9f3314589c9a9136388751d9adae6b0ed400978a
   subpackages:
   - google
   - internal
@@ -260,7 +292,7 @@ imports:
   - googleapi
   - googleapi/internal/uritemplates
 - name: google.golang.org/appengine
-  version: c5a90ac045b779001847fec87403f5cba090deae
+  version: 54a98f90d1c46b7731eb8fb305d2a321c30ef610
   subpackages:
   - internal
   - internal/app_identity
@@ -305,7 +337,7 @@ imports:
   - json
   - jwt
 - name: gopkg.in/yaml.v2
-  version: 5420a8b6744d3b0345ab293f6fcba19c978f1183
+  version: 51d6538a90f86fe93ac480b35f37b2be17fef232
 - name: k8s.io/api
   version: 2d6f90ab1293a1fb871cf149423ebb72aa7423aa
   subpackages:
@@ -341,7 +373,7 @@ imports:
   - storage/v1alpha1
   - storage/v1beta1
 - name: k8s.io/apiextensions-apiserver
-  version: b499623aa7a31f7c85b37017e068b21206a68e25
+  version: 06dfdaae5c2bd89e1243151ff65b9bf8ee050f28
   subpackages:
   - pkg/features
 - name: k8s.io/apimachinery
@@ -351,12 +383,8 @@ imports:
   - pkg/api/errors
   - pkg/api/meta
   - pkg/api/resource
-  - pkg/api/testing
-  - pkg/api/testing/fuzzer
-  - pkg/api/testing/roundtrip
   - pkg/api/validation
   - pkg/api/validation/path
-  - pkg/apis/meta/fuzzer
   - pkg/apis/meta/internalversion
   - pkg/apis/meta/v1
   - pkg/apis/meta/v1/unstructured
@@ -493,7 +521,7 @@ imports:
   - util/jsonpath
   - util/retry
 - name: k8s.io/helm
-  version: 2ef61fdf5c46fdc47ac264926e70e0590e7b6f94
+  version: 2e55dbe1fdb5fdb96b75ff144a339489417b146b
   subpackages:
   - cmd/helm/installer
   - pkg/chartutil
@@ -519,7 +547,7 @@ imports:
   - pkg/util/proto
   - pkg/util/proto/validation
 - name: k8s.io/kubernetes
-  version: cd6e3aed88a18b65cebe65e2e577455b0352ccf5
+  version: 633fb4d3108d18a919102ffababfa064b76a2e78
   subpackages:
   - pkg/api/events
   - pkg/api/legacyscheme

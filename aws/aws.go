@@ -294,7 +294,7 @@ func (p *Provider) RemoveK8s(ctx context.Context, k8s *common.CreateK8sResponse)
 }
 
 // CreateStaticIP unimplemented for AWS
-func (p *Provider) CreateStaticIP(ctx context.Context, name string) (*common.CreateStaticIPResponse, error) {
+func (p *Provider) CreateStaticIP(ctx context.Context, name string, req *common.StaticIPRequest) (*common.CreateStaticIPResponse, error) {
 	return nil, errors.New("Unimplemented")
 }
 
