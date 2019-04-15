@@ -464,7 +464,11 @@ func (p *Provider) RemoveStaticIP(ctx context.Context, staticIP *common.CreateSt
 			return err
 		}
 	case common.REGIONAL:
-		_, err := p.computeSvc.Addresses.Delete(p.projectID, staticIP.Region, staticIP.Name).Context(ctx).Do()
+		region := "us-east1"
+		if len(staticIP.Region) > 0 {
+			region = staticIP.Region
+		}
+		_, err := p.computeSvc.Addresses.Delete(p.projectID, region, staticIP.Name).Context(ctx).Do()
 		if err != nil {
 			return err
 		}
