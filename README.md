@@ -7,46 +7,95 @@
 package main
 
 import (
-    "context"
-    "fmt"
-    "time"
+	"context"
+	"fmt"
+	"os"
+	"time"
 
-    "github.com/sas-fe/cloud-provider-tools"
-    "github.com/sas-fe/cloud-provider-tools/common"
+	"github.com/sas-fe/cloud-provider-tools/common"
+	"github.com/sas-fe/cloud-provider-tools/gce"
 )
 
 func main() {
-    p, err := cpt.NewCloudProvider(cpt.DIGITALOCEAN)
-    if err != nil {
-        panic(err)
-    }
+	adc := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
+	if len(adc) == 0 {
+		panic("$GOOGLE_APPLICATION_CREDENTIALS not set")
+	}
 
-    ctx := context.TODO()
+	projectID := os.Getenv("GCP_PROJECT")
+	if len(projectID) == 0 {
+		panic("$GCP_PROJECT not set")
+	}
 
-    serverResp, err := p.CreateServer(ctx, "test-server")
-    if err != nil {
-        panic(err)
-    }
+	domain := os.Getenv("DOMAIN")
+	if len(domain) == 0 {
+		panic("$DOMAIN not set")
+	}
 
-    subDomain := serverResp.Name + "-" + strconv.Itoa(serverResp.ServerID.(int)) + "." + "instances"
+	dnsZone := os.Getenv("GCP_DNS_ZONE")
+	if len(domain) == 0 {
+		panic("$GCP_DNS_ZONE not set")
+	}
 
-    dnsResp, err := p.CreateDNSRecord(ctx, subDomain, serverResp.ServerIP)
-    if err != nil {
-        panic(err)
-    }
+	ctx := context.TODO()
 
-    fmt.Println("Sleeping for 120 seconds")
-    time.Sleep(120 * time.Second)
+	p, err := gce.NewProvider(projectID, domain, dnsZone)
+	if err != nil {
+		panic(err)
+	}
 
-    err2 := p.RemoveServer(ctx, serverResp.ServerID)
-    if err2 != nil {
-        panic(err2)
-    }
+	clusterName := "test-k8s"
+	subDomain := clusterName + "." + "instances"
 
-    err3 := p.RemoveDNSRecord(ctx, dnsResp.SubDomainID)
-    if err3 != nil {
-        panic(err3)
-    }
+	fmt.Println("Acquiring global static IP")
+	ipResp, err := p.CreateStaticIP(ctx, clusterName, &common.StaticIPRequest{IPType: common.GLOBAL, Region: "us-east1"})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(ipResp)
+
+	fmt.Println("Creating DNS record")
+	dnsResp, err := p.CreateDNSRecord(ctx, subDomain, ipResp.StaticIP)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(dnsResp)
+
+	fmt.Println("Creating Cluster")
+	k8sResp, err := p.CreateK8s(
+		ctx,
+		clusterName,
+		common.ServerRegion("us-east1-c"),
+		common.ServerSize("n1-standard-1"),
+		common.ServerTags([]string{"OnDemand"}),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(k8sResp)
+	fmt.Println(k8sResp.Credentials)
+
+	fmt.Println("Sleeping for 300 seconds")
+	time.Sleep(300 * time.Second)
+
+	fmt.Println("Removing Cluster")
+	err2 := p.RemoveK8s(ctx, k8sResp)
+	if err2 != nil {
+		panic(err2)
+	}
+
+	fmt.Println("Removing DNS record")
+	err3 := p.RemoveDNSRecord(ctx, dnsResp)
+	if err3 != nil {
+		panic(err3)
+	}
+
+	fmt.Println("Removing static IP")
+	err4 := p.RemoveStaticIP(ctx, ipResp)
+	if err4 != nil {
+		panic(err4)
+	}
 }
 ```
 
